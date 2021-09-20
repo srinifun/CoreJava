@@ -1,0 +1,134 @@
+https://tudip.com/blog-post/how-to-create-custom-annotation-in-java-and-android/
+
+
+How to Create Custom Annotation in Java and Android
+Annotations are one of the small and simple functionalities of the Android/Java development, yet for the majority of developers, it is not clear or they never understand the functionality and usability of the Annotations. With this article, we are trying to simplify the way Annotations used in the Android application and it use case in the automation testing.
+
+What is annotation?
+Java annotations are used to provide metadata for your Java code.
+
+Java annotations are used for the following purposes:
+
+Compiler instructions
+Build-time instructions
+Runtime instructions
+Java defines seven built-in annotations
+
+Three are included in java.lang
+
+@Override:- This annotation tells the compiler that the subclass method is overriding the parent class method.
+@SuppressWarnings:- If we don’t want to fix the warning, then we can suppress it with the annotation. (Ignore the warning)
+@Deprecated:- It informs the user that this method is deprecated and it may be removed in the future versions. The compiler will give you a warning if your code uses deprecated classes, methods or fields,
+Four are imported from java.lang.annotation
+
+1. @Retention
+You can specify for your custom annotation if you want that should be available at runtime
+
+RetentionPolicy.SOURCE:- refers to the source code, discarded during compilation. It will not be available in the compiled class.
+RetentionPolicy.CLASS:- refers to the .class file, available to java compiler but not to JVM. It is included in the class file.
+RetentionPolicy.RUNTIME:- refers to the runtime, available to Java compiler and JVM.
+Example:
+
+Retention(RetentionPolicy.RUNTIME)
+@interface annotation_name {
+}
+2. @Target
+
+It takes one argument, it specifies the type of declarations to which the annotation can be applied
+Annotations can be applied to the following elements
+Constructor: CONSTRUCTOR
+Field: FIELD
+Local variable: LOCAL_VARIABLE
+Method: METHOD
+Package: PACKAGE
+Parameter: PARAMETER
+Class, Interface, or enumeration: TYPE
+Example
+@Target({ElementType.METHOD})
+
+@interface annotation_name {
+
+}
+3. @Inherited
+
+Java annotation used in a class should be inherited by subclasses inheriting from that class.
+Example
+Batrun_annotation file
+@Inherited
+public @interface Batrun_annotation {
+Above annotation used in class
+@Batrun_annotation
+public class SuperClass {
+.........
+}
+public class SubClass extends SuperClass { ... }
+How to create a custom annotation
+Just like a Java class or interface, annotations are defined in their own file,
+Here @interface is a keyword, It tells to the Java compiler that this is a Java annotation definition.
+In the following example, we specify the type of element where the annotation is to be applied such as TYPE, METHOD, FIELD.
+Example:
+@Target ({ElementType.TYPE, ElementType.FIELD, ElementType.METHOD})
+public @interface CustomAnnotation {
+}
+There are three types of annotations.
+Marker Annotation: An annotation that has no method, is called marker annotation.
+@interface CustomAnnotation{}
+Single-Value Annotation: An annotation that has one method, you can pass single value.
+@interface CustomAnnotation{
+int value();
+}
+Multi-Value Annotation: An annotation that has more than one method, you can pass multiple values.
+@interface MyAnnotation{
+int value1();
+String value2();
+}
+How to use a custom annotation
+You can use the above custom annotation for method, class, fields.
+Example:
+
+Class
+// Single value annotation
+@CustomAnnotation (value=10)
+public class MyClass {
+}
+Method
+// Multi value annotation
+@CustomAnnotation (value1=10, value2="Sandip")
+public class MyMethod() {
+}
+How to run the test suite using custom annotation in android
+We need to use the gradle wrapper command to run the test cases related to CustomAnnotation
+Command:
+./gradlew connectedAndroidTest -P android.testInstrumentationRunnerArguments.annotation=com.shopwell.shopwellandroid.annotations.CustomAnnotation
+Execute the above command in your terminal.
+Using Annotation, we have simply created a new group called BatRun which consist of several test cases that are run by the testers during the Manual BAT Run testing. With this annotation, we are able to run the test cases marked under the BATRun only.
+To create a new custom annotation and start using it in your automation test cases, please follow the steps below:
+Create one java annotation file: BatRun.java
+@Target({ElementType.METHOD, ElementType.TYPE})
+@Retention(RetentionPolicy.RUNTIME)
+public @interface BatRun {
+}
+Add above annotation before your test case
+@BatRun
+@Test
+public void verifyMessageIsDisplayedAfterTappingOnButton() {
+// Press the button.
+onView(withId(R.id.changeText)).perform(click());
+// Check that the text was changed.
+onView(withId(R.id.inputField)).check(matches(withText("Hello")));
+Create script file ‘BatRunScript.sh’ to run the test cases marked under the BATRun only.
+#!/usr/bin/env bash
+// Run the BatRun test cases
+./gradlew connectedAndroidTest -P android.testInstrumentationRunnerArguments.annotation=com.shopwell.shopwellandroid.annotations.BatRun
+Run the above script file
+Open terminal enter command
+ ./BatRunScript.sh
+Note:
+If “Build failed” error is occurred
+Then need to update the gradle version in “gradle-wrapper.properties” file
+distributionUrl=https\://services.gradle.org/distributions/gradle-4.10.1-all.zip
+
+Reference
+http://tutorials.jenkov.com/java/annotations.html
+https://www.javatpoint.com/java-annotation
+https://www.geeksforgeeks.org/annotations-in-java/
